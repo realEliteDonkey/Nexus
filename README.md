@@ -1,6 +1,6 @@
 # 🚀 Nexus — Your Cross-Platform C/C++ Build Sidekick
 
-> *"Code more. Configure less. Nexus does the rest."*
+> *“Build with flair, code with care — Nexus takes you there.”*
 
 ---
 
