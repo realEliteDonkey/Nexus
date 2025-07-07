@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
 
 /*
     Provides cross-platform compatability for the purpose
@@ -50,6 +51,50 @@
 */
 
 int nexus_mkdir(const char* str);
+void add_src_files();
+
+void add_src_files() {
+    // used for src_file.h creation
+    const char* dir_name = "src";
+    struct dirent* entry;
+    DIR *dir = opendir(dir_name);
+
+    if (dir == NULL)
+        perror("Could not open directory.");
+
+    // Add src_file.h functionality code generation at runtime
+    // must be done before build.c is built
+    FILE* src_files = fopen("src_files.h", "w");
+    if ((src_files) == NULL) {
+        perror("Failed to open file");
+    } else {
+        fprintf(src_files, "#ifndef SRC_FILES_H\n");
+        fprintf(src_files, "#define SRC_FILES_H\n\n");
+        fprintf(src_files, "const char* files[] = {\n");
+
+        // loop through src directory, retrieving all src file names 
+        // with .c or .cpp extensions
+        while ((entry = readdir(dir)) != NULL) {
+            // Skip "." and ".."
+            if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+                continue;
+
+            const char* ext = strrchr(entry->d_name, '.');
+            if (ext != NULL && (strcmp(ext, ".c") == 0 || strcmp(ext, ".cpp") == 0)) {
+                fprintf(src_files, "    \"src/");
+                fprintf(src_files, "%s\",\n", entry->d_name);
+            }
+            
+        }
+
+        closedir(dir);
+        
+        fprintf(src_files, "    NULL\n");
+        fprintf(src_files, "};\n\n");
+        fprintf(src_files, "#endif\n");
+    }
+    fclose(src_files);
+}
 
 int nexus_mkdir(const char* str) {
     if (mkdir(str, 0777) == 0) {
@@ -64,6 +109,7 @@ int nexus_mkdir(const char* str) {
 const char* build_template = 
     "#include <stdio.h>\n"
     "#include <stdlib.h>\n"
+    "#include \"src_files.h\"\n"
     "#include <string.h>\n\n"
     "/*\n"
     "    Use gcc for C files or g++ for c++\n"
@@ -85,11 +131,6 @@ const char* build_template =
     "       Ensure you provide the relative path in relation to the \"build\"\n"
     "       directory.\n"
     "   */\n"
-    "   char* files[] = {\n"
-    "       \"src/main.c\",\n"
-    "       NULL\n"
-    "   };\n"
-    "\n"
     "   /*\n"
     "       Command input buffer is 2048 chars.\n"
     "       If you have a lot of files, just input whatever you need for a size.\n"
@@ -130,64 +171,68 @@ const char* main_template =
                              
 int main(int argc, char* argv[]) {
 
-    if (argc != 2) {
+    if (argc != 2)
         perror("nexus has max ONE argument other than 'nexus' itself!\n");
-    }
+
 
     if (strcmp(argv[1], "init") == 0) {
         int result = nexus_mkdir("src");
-        if (result != 0) {
+        if (result != 0)
             perror("Error creating directory 'src'");
-        }
 
         result = nexus_mkdir("lib");
-        if (result != 0) {
+        if (result != 0)
             perror("Error creating directory 'lib'");
-        }
 
         result = nexus_mkdir("bin");
-        if (result != 0) {
+        if (result != 0)
             perror("Error creating directory 'bin'");
-        }
 
 
-        FILE* build_file = fopen("build.c", "w");
-        if (build_file == NULL) {
-            perror("Failed to open file");
-        } else {
-            if (fputs(build_template, build_file) == EOF) {
-                perror("Failed to write to file");
-                fclose(build_file);
-            }
-        }   
 
         FILE* main_file = fopen("src/main.c", "w");
-        if (main_file == NULL) {
+        if (main_file == NULL)
             perror("Failed to open file");
-        } else {
+        else {
             if (fputs(main_template, main_file) == EOF) {
                 perror("Failed to write to file");
                 fclose(main_file);
             }
         }
 
+
+        // BUILD SRC_FILES_H
+        add_src_files();
+
+
+
+        FILE* build_file = fopen("build.c", "w");
+        if (build_file == NULL)
+            perror("Failed to open file");
+        else {
+            if (fputs(build_template, build_file) == EOF) {
+                perror("Failed to write to file");
+                fclose(build_file);
+            }
+        }   
+
         // TODO: Perform a 'git init'
     }
 
     else if (strcmp(argv[1], "build") == 0) {
+        add_src_files();
         system("gcc -o bin/build build.c");
         system("bin/build");
     }
 
     else if (strcmp(argv[1], "run") == 0) {
+        add_src_files();
         system("gcc -o bin/build build.c");
         system("bin/build");
         system("bin/main");
     }
 
-    else {
-        perror("No such nexus command exists!\n");
-    }
+    else perror("No such nexus command exists!\n");
 
     return 0;
 }
