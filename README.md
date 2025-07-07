@@ -83,7 +83,7 @@ Builds and runs your project executable.
 - [ ] Auto-generate `.gitignore` and perform `git init` on `nexus init`.
 - [ ] Auto-detect and add all source files to build process.
 - [ ] Add Windows and Unix installer scripts.
-- [ ] Support for C++ builds with `g++`.
+- [ ] Support for C++ builds with `g++` (for now manual manipulation of build.c is required).
 - [ ] Cross-platform binary releases.
 
 ---
