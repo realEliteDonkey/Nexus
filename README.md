@@ -108,11 +108,6 @@ Distributed under the MIT License. See `LICENSE` for details.
 
 ---
 
-## 👑 Stay hip, build fast, and code happy with Nexus!  
-*— Your friendly neighborhood build tool*
-
----
-
 ### Example session:
 
         $ nexus init
