@@ -22,6 +22,7 @@
     2: Failed to write to file.
  */
 NEX_ERROR build_file(const char* file_name, const char* template) {
+    printf("[DEBUG] build_file trying to create: %s\n", file_name);
     FILE* file = fopen(file_name, "w");
     if (file == NULL) {
         perror("Failed to open file");
@@ -222,6 +223,7 @@ NEX_ERROR nexus_new(const char* project_name, int argc, char* argv[]) {
         perror("Failed to change directory");
         return ERR_FAILED_TO_OPEN;
     }
+    printf("[DEBUG] Changed directory to %s\n", project_name);
 
     // Create necessary directories
     result = nexus_mkdir("src");
@@ -239,9 +241,15 @@ NEX_ERROR nexus_new(const char* project_name, int argc, char* argv[]) {
         return ERR_MKDIR_FAILED;
     }
 
+    result = nexus_mkdir("nexus_build");
+    if (result != SUCCESS) {
+        return ERR_MKDIR_FAILED;
+    }
+
     // Create .nexus file
     FILE* nex_file = fopen(".nexus", "w");
     if (nex_file == NULL) {
+        fclose(nex_file);
         perror("Could not open .nexus file");
         return ERR_FAILED_TO_OPEN;
     }
