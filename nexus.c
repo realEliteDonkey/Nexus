@@ -103,6 +103,12 @@ NEX_ERROR main(int argc, char* argv[]) {
         return ERR_CMD_NOT_FOUND;
     }
 
+    if (result != SUCCESS) {
+        perror("An error occurred while executing the command.\n");
+        return result;
+    }
+
+
     return SUCCESS;
 }
 
