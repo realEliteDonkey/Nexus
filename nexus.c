@@ -18,87 +18,42 @@ NEX_ERROR main(int argc, char* argv[]) {
         return ERR_NEX_ARG_COUNT;
     }
 
+    // TODO: Nexus new command
+    if (strcmp(argv[1], "new") == 0) {
+        if (argc != 3) {
+            perror("nexus 'new' command requires a project name!\n");
+            return ERR_NEX_ARG_COUNT;
+        }
+
+        result = nexus_new(argv[2], argc, argv);
+        if (result != SUCCESS) {
+            perror("Failed to create new Nexus project.\n");
+            return result;
+        }
+        return SUCCESS;
+    }
+
     // Builds a project with an executable
     // TODO: Prevent re-init 
     if (strcmp(argv[1], "init") == 0) {
-        result = nexus_mkdir("nexus_build");
-        if (result != SUCCESS) {
-            return ERR_MKDIR_FAILED;
-        }
-
-        result = nexus_mkdir("src");
-        if (result != SUCCESS) {
-            return ERR_MKDIR_FAILED;
-        }
-
-        result = nexus_mkdir("include");
-        if (result != SUCCESS) {
-            return ERR_MKDIR_FAILED;
-        }
-
-        result = nexus_mkdir("build");
-        if (result != SUCCESS) {
-            return ERR_MKDIR_FAILED;
-        }
-
-        FILE* nex_file = fopen(".nexus", "w");
-        if (nex_file == NULL) {
-            perror("Could not open .nexus file");
-            return ERR_FAILED_TO_OPEN;
-        }
-
-        result = build_file("nexus_build/color_codes.h", color_codes_template);
-        if (result != SUCCESS) exit(1);
-        
-
-        // TODO: put resulting code in a build_exe_proj()
-        // TODO: create a library style buiild_lib_proj() if argv[2] == "--lib"
-        // If a --lib tag is specified, exclude main.c and add a lib.c w/ no main()
-        if (argc == 2) {
-            result = nexus_mkdir("bin");
-            if (result != 0) {
-                return ERR_MKDIR_FAILED;
-            }
-
-            result = build_file("src/main.c", main_template);
-            if (result != 0) exit(result);
-
-            fprintf(nex_file, "TargetType=executable\n");
-        } 
-        else if (argc == 3 && strcmp(argv[2], "--lib") == 0) {
-            result = nexus_mkdir("lib");
-            if (result != 0) {
-                return ERR_MKDIR_FAILED;
-            }
-
-            result = nexus_mkdir("examples");
-            if (result != 0) {
-                return ERR_MKDIR_FAILED;
-            }
-
-            result = build_file("src/lib.c", lib_template);
-            if (result != 0) exit(result);
-
-            fprintf(nex_file, "TargetType=library\n");
-        }
-
-        // Close .nexus file for writing
-        fclose(nex_file);
-
-        // BUILD SRC_FILES_H
-        add_src_files();
-
-        // TODO: Perform a 'git init'
+        result = nexus_init(argc, argv);
+        return result;
     }
 
     else if (strcmp(argv[1], "build") == 0 && argc == 2) {
         result = nexus_build();
+        return result;
     }
 
     // TODO: Disable run for LIBRARY TargetTypes.
     else if (strcmp(argv[1], "run") == 0 && argc == 2) {
         result = nexus_build();
+        if (result != SUCCESS) {
+            perror("Failed to build the project before running.\n");
+            return result;
+        }
         result = nexus_run();
+        return result;
     }
 
     else {

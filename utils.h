@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#include <unistd.h>
 #include "target_type.h"
 #include "nex_error.h"
 #include "templates.h"
@@ -16,5 +17,8 @@ NEX_ERROR add_src_files();
 NEX_ERROR build_file(const char* file_name, const char* template);
 NEX_ERROR nexus_build();
 NEX_ERROR nexus_run();
+NEX_ERROR nexus_new(const char* project_name, int argc, char* argv[]);
+NEX_ERROR nexus_init(int argc, char* argv[]);
+
 
 #endif
