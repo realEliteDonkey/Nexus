@@ -147,7 +147,7 @@ NEX_ERROR add_src_files() {
 
 NEX_ERROR nexus_mkdir(const char* str) {
     if (mkdir(str, 0777) == 0) {
-        printf("\033[1;32m[nexus]\033[0m Directory \"%s\" created.\n", str);
+        printf(GREEN "[nexus]%s Directory \"%s\" created.\n", RESET, str);
     } else {
         return ERR_MKDIR_FAILED;
     }
@@ -159,7 +159,7 @@ NEX_ERROR nexus_build() {
 
     result = add_src_files();
 
-    printf("Added src files.\n");
+    printf(GREEN "[nexus]%s Added src files.\n", RESET);
     char type_str[32] = "executable";
 
     FILE* nex_file = fopen(".nexus",  "r");
@@ -168,20 +168,20 @@ NEX_ERROR nexus_build() {
         fclose(nex_file);
     }
 
-    printf("Created .nexus file.\n");
+    printf(GREEN "[nexus]%s Created .nexus file.\n", RESET);
     
     const char* build_template = 
         strcmp(type_str, "executable") == 0 ? build_template_executable : build_template_library;
     
-    printf("Building build.c file.\n");
+    printf(GREEN "[nexus]%s Building build.c file.\n", RESET);
 
     // create the build.c file in current project directory
     result = build_file("nexus_build/build.c", build_template);
     if (result != SUCCESS) exit(ERR_FAILED_TO_OPEN);
 
-    printf("Created build.c file.\n");
+    printf(GREEN "[nexus]%s Created build.c file.\n", RESET);
 
-    printf("Executing: gcc -o nexus_build/build nexus_build/build.c\n");
+    printf(GREEN "[nexus]%s Executing: gcc -o nexus_build/build nexus_build/build.c\n", RESET);
 
     int res = system("gcc -o nexus_build/build nexus_build/build.c");
     if (res != 0) {
@@ -189,9 +189,9 @@ NEX_ERROR nexus_build() {
         return 1;
     }
 
-    printf("Execution successful\n");
+    printf(GREEN "[nexus]%s Execution successful\n", RESET);
 
-    printf("Running nexus_build\n");
+    printf(GREEN "[nexus]%s Running nexus_build\n", RESET);
     
     system("nexus_build/build");
 }
@@ -199,7 +199,7 @@ NEX_ERROR nexus_build() {
 NEX_ERROR nexus_run() {
     NEX_ERROR result = SUCCESS;
 
-    printf("Executing: bin/main\n");
+    printf(GREEN "[nexus]%s Executing: bin/main\n", RESET);
 
     result = system("bin/main");
     if (result != 0) {

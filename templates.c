@@ -1,4 +1,5 @@
 #include "templates.h"
+#include "color_codes.h"
 
 
 const char* build_template_library =
@@ -6,6 +7,7 @@ const char* build_template_library =
     "#include <stdlib.h>\n"
     "#include <string.h>\n"
     "#include \"../src_files.h\"\n"
+    "#include \"color_codes.h\"\n"
     "\n"
     "int main() {\n"
     "    char obj_cmd[512];\n"
@@ -41,13 +43,14 @@ const char* build_template_library =
     "        return 1;\n"
     "    }\n"
     "\n"
-    "    printf(\"\\033[1;32m[nexus]\\033[0m Library built successfully.\\n\");\n"
+    "    printf(GREEN \"[nexus]\\033[0m Library built successfully.\\n\");\n"
     "    return 0;\n"
     "}\n";
 
 const char* build_template_executable = 
     "#include <stdio.h>\n"
     "#include <stdlib.h>\n"
+    "#include \"color_codes.h\"\n"
     "#include \"../src_files.h\"\n"
     "#include <string.h>\n\n"
     "/*\n"
@@ -88,7 +91,7 @@ const char* build_template_executable =
     "       return 1;\n"
     "   }\n"
     "\n"
-    "   printf(\"\\033[1;32mCompilation and linking successful.\\033[0m\\n\");\n"
+    "   printf(GREEN \"Compilation and linking successful.\\033[0m\\n\");\n"
     "\n"
     "   return 0;\n"
     "}\n";
@@ -107,3 +110,14 @@ const char* lib_template =
     "   Add library code in this file.\n"
     "   Add headers for associated .c files in include/\n"
     "*/\n";
+
+const char* color_codes_template =
+    "#ifndef COLOR_CODES_H\n"
+    "#define COLOR_CODES_H\n"
+    "\n"
+    "#define GREEN \"\\033[0;32m\"\n"
+    "#define RED \"\\033[0;31m\"\n"
+    "#define YELLOW \"\\033[0;33m\"\n"
+    "#define RESET \"\\033[0m\"\n"
+    "\n"
+    "#endif\n";

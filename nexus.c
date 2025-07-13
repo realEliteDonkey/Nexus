@@ -46,6 +46,9 @@ NEX_ERROR main(int argc, char* argv[]) {
             perror("Could not open .nexus file");
             return ERR_FAILED_TO_OPEN;
         }
+
+        result = build_file("nexus_build/color_codes.h", color_codes_template);
+        if (result != SUCCESS) exit(1);
         
 
         // TODO: put resulting code in a build_exe_proj()

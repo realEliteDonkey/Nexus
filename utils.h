@@ -8,6 +8,7 @@
 #include "target_type.h"
 #include "nex_error.h"
 #include "templates.h"
+#include "color_codes.h"
 
 NEX_ERROR nexus_mkdir(const char* str);
 NEX_ERROR write_src_files_recursive(FILE *src_files, const char *base_path, const char *relative_path);
