@@ -111,7 +111,6 @@ NEX_ERROR main(int argc, char* argv[]) {
         return result;
     }
 
-
     return SUCCESS;
 }
 
