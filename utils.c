@@ -42,11 +42,78 @@ NEX_ERROR build_file(const char* file_name, const char* template) {
     return SUCCESS;
 }
 
+/**
+ * @brief Recursively writes all source files in the src directory
+ * to the src_files.h file.
+ * 
+ * @param src_files: file pointer to the src_files.h file.
+ * @param base_path: base path of the project directory.
+ * @param relative_path: relative path from the base path to the current directory.
+ * @return NEX_ERROR 
+ */
+NEX_ERROR write_src_files_recursive(FILE *src_files, const char *base_path, const char *relative_path) {
+    char full_path[1024];
+    snprintf(full_path, sizeof(full_path), "%s/%s", base_path, relative_path);
+
+    DIR *dir = opendir(full_path);
+    if (dir == NULL) {
+        perror("Could not open directory");
+        return ERR_DIR_NOT_FOUND;
+    }
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+        // Skip "." and ".."
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+            continue;
+
+        char entry_relative[512];
+        if (relative_path[0] != '\0')
+            snprintf(entry_relative, sizeof(entry_relative), "%s/%s", relative_path, entry->d_name);
+        else
+            snprintf(entry_relative, sizeof(entry_relative), "%s", entry->d_name);
+
+        char entry_full[512];
+        snprintf(entry_full, sizeof(entry_full), "%s/%s", base_path, entry_relative);
+
+        struct stat st;
+        if (stat(entry_full, &st) == -1) {
+            perror("Failed to stat entry");
+            continue;
+        }
+
+        if (S_ISDIR(st.st_mode)) {
+            // Recurse into subdirectory
+            write_src_files_recursive(src_files, base_path, entry_relative);
+        } else if (S_ISREG(st.st_mode)) {
+            const char *ext = strrchr(entry->d_name, '.');
+            if (ext && (strcmp(ext, ".c") == 0 || strcmp(ext, ".cpp") == 0)) {
+                fprintf(src_files, "    \"src/%s\",\n", entry_relative);
+            }
+        }
+    }
+
+    closedir(dir);
+    return SUCCESS;
+}
+
+/**
+ * @brief Generates a src_files.h file containing all source files
+ * in the src directory with .c or .cpp extensions.
+ * This file is used to compile the project
+ * and is created before the build.c file.
+ * This function reads the src directory,
+ * retrieves all source files with .c or .cpp extensions,
+ * and writes their names into src_files.h.
+ * 
+ * @return NEX_ERROR 
+ */
 NEX_ERROR add_src_files() {
     // used for src_file.h creation
-    const char* dir_name = "src";
+    const char* base_dir = "src";
+
     struct dirent* entry;
-    DIR *dir = opendir(dir_name);
+    DIR *dir = opendir(base_dir);
 
     if (dir == NULL) {
         perror("Could not open directory.");
@@ -59,31 +126,21 @@ NEX_ERROR add_src_files() {
     if ((src_files) == NULL) {
         perror("Failed to open file");
         return ERR_FAILED_TO_OPEN;
-    } else {
-        fprintf(src_files, "#ifndef SRC_FILES_H\n");
-        fprintf(src_files, "#define SRC_FILES_H\n\n");
-        fprintf(src_files, "const char* files[] = {\n");
-
-        // loop through src directory, retrieving all src file names 
-        // with .c or .cpp extensions
-        while ((entry = readdir(dir)) != NULL) {
-            // Skip "." and ".."
-            if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-                continue;
-
-            const char* ext = strrchr(entry->d_name, '.');
-            if (ext != NULL && (strcmp(ext, ".c") == 0 || strcmp(ext, ".cpp") == 0)) {
-                fprintf(src_files, "    \"src/");
-                fprintf(src_files, "%s\",\n", entry->d_name);
-            }
-        }
-
-        closedir(dir);
-        
-        fprintf(src_files, "    NULL\n");
-        fprintf(src_files, "};\n\n");
-        fprintf(src_files, "#endif\n");
     }
+
+    // Write the header guard and array declaration
+    fprintf(src_files, "#ifndef SRC_FILES_H\n");
+    fprintf(src_files, "#define SRC_FILES_H\n\n");
+    fprintf(src_files, "const char* files[] = {\n");
+
+    NEX_ERROR result = write_src_files_recursive(src_files, base_dir, "");
+
+    closedir(dir);
+    
+    fprintf(src_files, "    NULL\n");
+    fprintf(src_files, "};\n\n");
+    fprintf(src_files, "#endif\n");
+    
     fclose(src_files);
     return SUCCESS;
 }
