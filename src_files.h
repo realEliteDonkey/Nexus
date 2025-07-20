@@ -2,7 +2,9 @@
 #define SRC_FILES_H
 
 const char* files[] = {
-    "src/main.c",
+    "src/nexus_utils.c",
+    "src/nexus_main.c",
+    "src/nexus_templates.c",
     NULL
 };
 
