@@ -1,0 +1,7 @@
+# --- Ignore Build Directory ---
+# Ignore binary output
+bin/
+# Ignore compiled files
+*.exe
+# Ignore IDE specific files
+.vscode/
