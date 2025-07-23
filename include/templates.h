@@ -15,5 +15,6 @@ extern const char* all_templates;
 extern const char* header_template;
 
 int get_proj_name(FILE* nex_file, char* buffer, size_t size);
+int get_proj_path(FILE* nex_file, char* path, size_t size);
 
 #endif

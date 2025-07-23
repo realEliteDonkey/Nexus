@@ -23,5 +23,4 @@ NEX_ERROR git_installed();
 NEX_ERROR nexus_git_init();
 NEX_ERROR nexus_path_export();
 
-
 #endif

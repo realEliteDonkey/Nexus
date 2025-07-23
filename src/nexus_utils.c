@@ -147,15 +147,27 @@ NEX_ERROR add_src_files() {
     return SUCCESS;
 }
 
+/**
+ * @brief Creates new directory with input relative path to project root directory.
+ * 
+ * @param str Relative path from root directory.
+ * @return NEX_ERROR 
+ */
 NEX_ERROR nexus_mkdir(const char* str) {
-    if (mkdir(str, 0777) == 0) {
+    if (mkdir(str, 0777) == 0)
         printf(GREEN "[nexus]%s Directory \"%s\" created.\n", RESET, str);
-    } else {
+    else
         return ERR_MKDIR_FAILED;
-    }
     return SUCCESS;
 }
 
+
+/**
+ * @brief Builds executable and library projects, leaving the binary in the projects
+ *        bin/ directory. Combines compilation and linking steps.
+ * 
+ * @return NEX_ERROR 
+ */
 NEX_ERROR nexus_build() {
     NEX_ERROR result = SUCCESS;
 
@@ -171,22 +183,6 @@ NEX_ERROR nexus_build() {
     }
 
     printf(GREEN "[nexus]%s Read .nexus file.\n", RESET);
-
-/*
-    // NEXUS'S BUILD.C IS EMPTY WHEN THIS EXECUTES.
-    // INSTEAD COPY CONTENTS FROM THE TEXT FILES AND THEN USE THAT AS A BUILD.C
-
-    FILE* templates = fopen("nexus_build/templates.c", "r");
-    char template_contents[BUFFER_SIZE] = {0};
-    if (templates) {
-        if (strcmp(type_str, "executable") == 0) {
-            fscanf(templates, "const char* build_template_executable = %s", template_contents);
-        } else if (strcmp(type_str, "library") == 0)
-        fscanf(templates, "const char* build_template_library = %s", template_contents);
-        fclose(templates);
-    }
-
-*/
 
     FILE* templates;
 
@@ -220,9 +216,6 @@ NEX_ERROR nexus_build() {
         return ERR_FAILED_TO_OPEN;
     }
 
-
-
-
     printf(GREEN "[nexus]%s Building build.c file.\n", RESET);
 
     // create the build.c file in current project directory
@@ -246,10 +239,17 @@ NEX_ERROR nexus_build() {
     system("nexus_build/build");
 }
 
+
+/**
+ * @brief Executes binary executable located in bin/ directory. Disabled
+ *        if TargetType=library
+ * 
+ * @return NEX_ERROR 
+ */
 NEX_ERROR nexus_run() {
     NEX_ERROR result = SUCCESS;
 
-    printf(GREEN "[nexus]%s Executing: bin/main\n", RESET);
+    printf(GREEN "[nexus]%s Executing project...\n", RESET);
 
     char cmd[256] = "bin/";
 
@@ -258,14 +258,19 @@ NEX_ERROR nexus_run() {
         perror("Could not open .nexus file");
         return ERR_FAILED_TO_OPEN;
     }
-    get_proj_name(nex_file, cmd, 256);
-
+    result = get_proj_name(nex_file, cmd, 256);
+    fclose(nex_file);
+    if (result != 0) {
+        return ERR_FAILED_TO_GET_EXE;
+    }
 
     result = system(cmd);
     if (result != 0) {
         perror("System compilation call unsuccessful");
         return 1;
     }
+
+    return SUCCESS;
 }
 
 NEX_ERROR nexus_new(const char* project_name, int argc, char* argv[]) {
@@ -345,8 +350,6 @@ NEX_ERROR nexus_new(const char* project_name, int argc, char* argv[]) {
         return ERR_FAILED_TO_OPEN;
     }
 
-    fprintf(nex_file, "ProjectName=%s\n", project_name);
-
     // TODO: put resulting code in a build_exe_proj()
     // TODO: create a library style buiild_lib_proj() if argv[2] == "--lib"
     // If a --lib tag is specified, exclude main.c and add a lib.c w/ no main()
@@ -360,6 +363,7 @@ NEX_ERROR nexus_new(const char* project_name, int argc, char* argv[]) {
         if (result != 0) exit(result);
 
         fprintf(nex_file, "TargetType=executable\n");
+
     } 
     else if (argc == 4 && strcmp(argv[3], "--lib") == 0) {
         result = nexus_mkdir("lib");
@@ -376,7 +380,10 @@ NEX_ERROR nexus_new(const char* project_name, int argc, char* argv[]) {
         if (result != 0) exit(result);
 
         fprintf(nex_file, "TargetType=library\n");
+
     }
+
+    fprintf(nex_file, "ProjectName=%s", project_name);
     
     fclose(nex_file);
 
@@ -548,16 +555,30 @@ NEX_ERROR nexus_path_export() {
         return ERR_FAILED_TO_OPEN;
     }
 
-    char exe_name[256];
-    if (fscanf(nex_file, "ExeName=%255s", exe_name) == EOF) {
-        perror("Failed to retrieve executable name in .nexus");
+
+    char exe_name[256] = "bin/";
+
+    nex_file = fopen(".nexus", "r");
+    if (!nex_file)  {
+        perror("Could not open .nexus file");
+        return ERR_FAILED_TO_OPEN;
+    }
+    NEX_ERROR result = get_proj_name(nex_file, exe_name, 256);
+    fclose(nex_file);
+    if (result != 0) {
         return ERR_FAILED_TO_GET_EXE;
     }
 
     char path[256];
-    if (fscanf(nex_file, "PATH=%255s", path) == EOF) {
-        perror("Failed to retrieve PATH in .nexus");
-        return ERR_FAILED_TO_GET_PATH;
+    nex_file = fopen(".nexus", "r");
+    if (!nex_file)  {
+        perror("Could not open .nexus file");
+        return ERR_FAILED_TO_OPEN;
+    }
+    result = get_proj_path(nex_file, path, 256);
+    fclose(nex_file);
+    if (result != 0) {
+        return ERR_FAILED_TO_GET_EXE;
     }
 
     char action[] = "cp ";
@@ -568,8 +589,12 @@ NEX_ERROR nexus_path_export() {
     strcat(cmd, " ");
     strcat(cmd, path);
 
+    printf(GREEN "[nexus]%s Executing: %s\n", RESET, cmd);
+
     if (system(cmd) != SUCCESS)
         return ERR_FAILED_PATH_EXPORT;
+
+    printf(GREEN "[nexus]%s Successfully exported to PATH\n", RESET);
     
     return SUCCESS;
 }

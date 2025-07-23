@@ -127,11 +127,35 @@ const char* gitignore_template =
     ".vscode/\n";
 
 int get_proj_name(FILE* nex_file, char* buffer, size_t size) {
-    char tmp_buffer[256] = "";
-    if (fscanf(nex_file, "ProjectName=%255s", tmp_buffer) == EOF) {
-        perror("Failed to retrieve executable name in .nexus");
-        return 12;
+    char line[256] = {0};
+    char tmp_buffer[256] = {0};
+
+    while (fgets(line, sizeof(line), nex_file)) {
+        // Look for "ProjectName=" at the start
+        if (sscanf(line, "ProjectName=%255s", tmp_buffer) == 1) {
+            tmp_buffer[strcspn(tmp_buffer, "\r\n")] = 0;  // Strip newline
+            strncat(buffer, tmp_buffer, size - strlen(buffer) - 1);
+            return 0;
+        }
     }
-    strncat(buffer, tmp_buffer, size - strlen(buffer) - 1);
-    return 0;
+
+    fprintf(stderr, "ProjectName not found in .nexus file\n");
+    return 12;
+}
+
+int get_proj_path(FILE* nex_file, char* path, size_t size) {
+    char line[256] = {0};
+    char tmp_buffer[256] = {0};
+
+    while (fgets(line, sizeof(line), nex_file)) {
+        // Look for "ProjectName=" at the start
+        if (sscanf(line, "PATH=%255s", tmp_buffer) == 1) {
+            tmp_buffer[strcspn(tmp_buffer, "\r\n")] = 0;  // Strip newline
+            strncat(path, tmp_buffer, size - strlen(path) - 1);
+            return 0;
+        }
+    }
+
+    fprintf(stderr, "PATH not found in .nexus file\n");
+    return 12;
 }
