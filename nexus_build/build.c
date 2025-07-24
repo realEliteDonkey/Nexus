@@ -25,7 +25,7 @@ int main() {
         return 11;
     }
 
-    int result = get_proj_name(nex_file, out_name, 256);
+    int result = get_proj_attr(nex_file, out_name, 256, PROJ_NAME_ATTR);
     fclose(nex_file);  // Always close the file
     if (result != 0) {
         return 12;

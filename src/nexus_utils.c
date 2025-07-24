@@ -60,6 +60,7 @@ NEX_ERROR build_file(const char* file_name, const char* template) {
  * @return NEX_ERROR 
  */
 NEX_ERROR write_src_files_recursive(FILE *src_files, const char *base_path, const char *relative_path) {
+    // TODO: Change to dynstr
     char full_path[1024];
     snprintf(full_path, sizeof(full_path), "%s/%s", base_path, relative_path);
 
@@ -75,12 +76,14 @@ NEX_ERROR write_src_files_recursive(FILE *src_files, const char *base_path, cons
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
             continue;
 
+        // TODO: Change to dynstr
         char entry_relative[BUFFER_SIZE];
         if (relative_path[0] != '\0')
             snprintf(entry_relative, sizeof(entry_relative), "%s/%s", relative_path, entry->d_name);
         else
             snprintf(entry_relative, sizeof(entry_relative), "%s", entry->d_name);
 
+        // TODO: Change to dynstr
         char entry_full[BUFFER_SIZE];
         int written = snprintf(entry_full, sizeof(entry_full), "%s/%s", base_path, entry_relative);
         if (written < 0 || written >= sizeof(entry_full)) {

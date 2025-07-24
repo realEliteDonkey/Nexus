@@ -2,6 +2,8 @@
 
 
 
+
+
 const char* all_templates =
 "#include \"../include/templates.h\"\n"
 "\n"
@@ -70,7 +72,7 @@ const char* all_templates =
 "    \"       Provide relative path from the \\\"build\\\" directory\\n\"\n"
 "    \"   */\\n\"\n"
 "    \"   char out_name[256] = \\\"bin/\\\";\\n\"\n"
-"    \"   int result = get_proj_name(fopen(\\\".nexus\\\", \\\"r\\\"), out_name, 256);\\n\"\n"
+"    \"   int result = get_proj_attr(fopen(\\\".nexus\\\", \\\"r\\\"), out_name, 256, PROJ_NAME_ATTR);\\n\"\n"
 "    \"   if (result != 0) { return 12; }\\n\"\n"
 "    \"\\n\"\n"
 "    \"   char cmd[2048] = {0};\\n\"\n"
@@ -131,36 +133,20 @@ const char* all_templates =
 "    \"# Ignore IDE specific files\\n\"\n"
 "    \".vscode/\\n\";\n"
 "\n"
-"int get_proj_name(FILE* nex_file, char* buffer, size_t size) {\n"
+"int get_proj_attr(FILE* nex_file, char* buffer, size_t size, const char* proj_attr) {\n"
 "    char line[256] = {0};\n"
 "    char tmp_buffer[256] = {0};\n"
 "\n"
 "    while (fgets(line, sizeof(line), nex_file)) {\n"
-"        // Look for \"ProjectName=\" at the start\n"
-"        if (sscanf(line, \"ProjectName=%255s\", tmp_buffer) == 1) {\n"
+"        // Look for proj_attr at the start\n"
+"        if (sscanf(line, proj_attr, tmp_buffer) == 1) {\n"
 "            tmp_buffer[strcspn(tmp_buffer, \"\\r\\n\")] = 0;  // Strip newline\n"
 "            strncat(buffer, tmp_buffer, size - strlen(buffer) - 1);\n"
 "            return 0;\n"
 "        }\n"
 "    }\n"
 "\n"
-"    fprintf(stderr, \"ProjectName not found in .nexus file\\n\");\n"
-"    return 12;\n"
-"}\n"
-"int get_proj_path(FILE* nex_file, char* path, size_t size) {\n"
-"    char line[256] = {0};\n"
-"    char tmp_buffer[256] = {0};\n"
-"\n"
-"    while (fgets(line, sizeof(line), nex_file)) {\n"
-"        // Look for \"ProjectName=\" at the start\n"
-"        if (sscanf(line, \"PATH=%255s\", tmp_buffer) == 1) {\n"
-"            tmp_buffer[strcspn(tmp_buffer, \"\\r\\n\")] = 0;  // Strip newline\n"
-"            strncat(path, tmp_buffer, size - strlen(path) - 1);\n"
-"            return 0;\n"
-"        }\n"
-"    }\n"
-"\n"
-"    fprintf(stderr, \"PATH not found in .nexus file\\n\");\n"
+"    fprintf(stderr, \"Attribute not found in .nexus file\\n\");\n"
 "    return 12;\n"
 "}\n";
 
@@ -233,7 +219,7 @@ const char* build_template_executable =
     "       Provide relative path from the \"build\" directory\n"
     "   */\n"
     "   char out_name[256] = \"bin/\";\n"
-    "   int result = get_proj_name(fopen(\".nexus\", \"r\"), out_name, 256);\n"
+    "   int result = get_proj_attr(fopen(\".nexus\", \"r\"), out_name, 256, PROJ_NAME_ATTR);\n"
     "   if (result != 0) { return 12; }\n"
     "\n"
     "   char cmd[2048] = {0};\n"
@@ -310,41 +296,24 @@ const char* gitignore_template =
 
 
 
-int get_proj_name(FILE* nex_file, char* buffer, size_t size) {
+
+
+int get_proj_attr(FILE* nex_file, char* path, size_t size, const char* proj_attr) {
+    // TODO: Change to dynstr
     char line[256] = {0};
+    // TODO: Change to dynstr
     char tmp_buffer[256] = {0};
 
     while (fgets(line, sizeof(line), nex_file)) {
-        // Look for "ProjectName=" at the start
-        if (sscanf(line, "ProjectName=%255s", tmp_buffer) == 1) {
-            tmp_buffer[strcspn(tmp_buffer, "\r\n")] = 0;  // Strip newline
-            strncat(buffer, tmp_buffer, size - strlen(buffer) - 1);
-            return 0;
-        }
-    }
-
-    fprintf(stderr, "ProjectName not found in .nexus file\n");
-    return 12;
-}
-
-
-
-
-
-int get_proj_path(FILE* nex_file, char* path, size_t size) {
-    char line[256] = {0};
-    char tmp_buffer[256] = {0};
-
-    while (fgets(line, sizeof(line), nex_file)) {
-        // Look for "ProjectName=" at the start
-        if (sscanf(line, "PATH=%255s", tmp_buffer) == 1) {
+        // scan for proj_attr MACRO defined in templates.h
+        if (sscanf(line, proj_attr, tmp_buffer) == 1) {
             tmp_buffer[strcspn(tmp_buffer, "\r\n")] = 0;  // Strip newline
             strncat(path, tmp_buffer, size - strlen(path) - 1);
             return 0;
         }
     }
 
-    fprintf(stderr, "PATH not found in .nexus file\n");
+    fprintf(stderr, "Attribute not found in .nexus file\n");
     return 12;
 }
 
@@ -367,7 +336,7 @@ const char* header_template =
     " const char* all_templates;\n"
     " const char* header_template;\n"
     "\n"
-    "int get_proj_name(FILE* nex_file, char* buffer, size_t size);\n"
+    "int get_proj_attr(FILE* nex_file, char* buffer, size_t size, PROJ_NAME_ATTR);\n"
     "\n"
     "#endif\n";
 

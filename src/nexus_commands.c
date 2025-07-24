@@ -170,6 +170,7 @@ NEX_ERROR nexus_run() {
 
     printf(GREEN "[nexus]%s Executing project...\n", RESET);
 
+    // TODO: Change to dynstr
     char cmd[256] = "bin/";
 
     FILE* nex_file = fopen(".nexus", "r");
@@ -177,7 +178,7 @@ NEX_ERROR nexus_run() {
         perror("Could not open .nexus file");
         return ERR_FAILED_TO_OPEN;
     }
-    result = get_proj_name(nex_file, cmd, 256);
+    result = get_proj_attr(nex_file, cmd, 256, PROJ_NAME_ATTR);
     fclose(nex_file);
     if (result != 0) {
         return ERR_FAILED_TO_GET_EXE;
@@ -208,6 +209,8 @@ NEX_ERROR nexus_build() {
     result = add_src_files();
 
     printf(GREEN "[nexus]%s Added src files.\n", RESET);
+
+    // TODO: Change to dynstr
     char type_str[32] = "executable";
 
     FILE* nex_file = fopen(".nexus",  "r");
@@ -227,6 +230,7 @@ NEX_ERROR nexus_build() {
     else 
         return ERR_FAILED_TO_READ;
 
+    // TODO: Change to dynstr
     char template_contents[BUFFER_SIZE] = {0};
 
     if (templates != NULL) {
@@ -286,6 +290,7 @@ NEX_ERROR nexus_path_export() {
     }
 
 
+    // TODO: Change to dynstr
     char exe_name[256] = "bin/";
     
 
@@ -294,25 +299,28 @@ NEX_ERROR nexus_path_export() {
         perror("Could not open .nexus file");
         return ERR_FAILED_TO_OPEN;
     }
-    NEX_ERROR result = get_proj_name(nex_file, exe_name, 256);
+    NEX_ERROR result = get_proj_attr(nex_file, exe_name, 256, PROJ_NAME_ATTR);
     fclose(nex_file);
     if (result != 0) {
         return ERR_FAILED_TO_GET_EXE;
     }
 
+    // TODO: Change to dynstr
     char path[256] = {0};
     nex_file = fopen(".nexus", "r");
     if (!nex_file)  {
         perror("Could not open .nexus file");
         return ERR_FAILED_TO_OPEN;
     }
-    result = get_proj_path(nex_file, path, 256);
+    result = get_proj_attr(nex_file, path, 256, PROJ_PATH_ATTR);
     fclose(nex_file);
     if (result != 0) {
         return ERR_FAILED_TO_GET_EXE;
     }
 
+    // TODO: Change to dynstr
     char action[] = "cp ";
+    // TODO: Change to dynstr
     char cmd[BUFFER_SIZE] = {0};
 
     strcat(cmd, action);
@@ -330,6 +338,7 @@ NEX_ERROR nexus_path_export() {
     if (system(cmd) != SUCCESS) {
         strcat(cmd, "_");
         if (system(cmd) != SUCCESS) return ERR_FAILED_PATH_EXPORT;
+        // TODO: Change to dynstr
         char rm_cmd[256] = "rm ";
         strcat(rm_cmd, path);
         strcat(rm_cmd, exe_name);
