@@ -1,7 +1,5 @@
 #include "../include/templates.h"
 
-
-
 const char* all_templates =
 "#include \"../include/templates.h\"\n"
 "\n"
@@ -167,6 +165,7 @@ const char* all_templates =
 
 
 
+
 const char* build_template_library =
     "#include <stdio.h>\n"
     "#include <stdlib.h>\n"
@@ -211,6 +210,9 @@ const char* build_template_library =
     "    printf(GREEN \"[nexus]\\033[0m Library built successfully.\\n\");\n"
     "    return 0;\n"
     "}\n";
+
+
+
 
 
 const char* build_template_executable = 
@@ -264,12 +266,14 @@ const char* build_template_executable =
 
 
 
+
 const char* main_template = 
     "#include <stdio.h>\n\n"
     "int main() {\n"
     "   printf(\"Hello, World!\\n\");\n"
     "   return 0;\n"
     "}\n";
+
 
 
 
@@ -307,6 +311,8 @@ const char* gitignore_template =
     "*.exe\n"
     "# Ignore IDE specific files\n"
     ".vscode/\n";
+
+
 
 
 
@@ -350,6 +356,8 @@ int get_proj_path(FILE* nex_file, char* path, size_t size) {
 
 
 
+
+
 const char* header_template =
     "#ifndef TEMPLATES_H\n"
     "#define TEMPLATES_H\n"
@@ -370,6 +378,3 @@ const char* header_template =
     "int get_proj_name(FILE* nex_file, char* buffer, size_t size);\n"
     "\n"
     "#endif\n";
-
-
-

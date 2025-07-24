@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
-#include "../include/utils.h"
+#include "../include/nexus_commands.h"
 
 NEX_ERROR main(int argc, char* argv[]) {
 
@@ -44,7 +44,6 @@ NEX_ERROR main(int argc, char* argv[]) {
         return result;
     }
 
-    // TODO: Disable run for LIBRARY TargetTypes.
     else if (strcmp(argv[1], "run") == 0 && argc == 2) {
         result = nexus_build();
         if (result != SUCCESS) {

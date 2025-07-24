@@ -5,6 +5,7 @@ const char* files[] = {
     "src/nexus_utils.c",
     "src/nexus_main.c",
     "src/nexus_templates.c",
+    "src/nexus_commands.c",
     NULL
 };
 
