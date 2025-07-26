@@ -65,7 +65,7 @@ const char* all_templates =
 "    \"*/\\n\"\n"
 "    \"\\n\"\n"
 "    \"int main() {\\n\"\n"
-"    \"   char comp[] = \\\"gcc -o \\\";\\n\"\n"
+"    \"   char comp[] = \\\"gcc -std=c2x -Wall -Wextra -o \\\";\\n\"\n"
 "    \"\\n\"\n"
 "    \"   /*\\n\"\n"
 "    \"       Provide directory and output exe name here.\\n\"\n"
@@ -212,7 +212,7 @@ const char* build_template_executable =
     "*/\n"
     "\n"
     "int main() {\n"
-    "   char comp[] = \"gcc -o \";\n"
+    "   char comp[] = \"gcc -std=c23 -Wall -Wextra -o \";\n"
     "\n"
     "   /*\n"
     "       Provide directory and output exe name here.\n"
@@ -319,6 +319,8 @@ int get_proj_attr(FILE* nex_file, char* path, size_t size, const char* proj_attr
 
 
 
+
+
 const char* header_template =
     "#ifndef TEMPLATES_H\n"
     "#define TEMPLATES_H\n"
@@ -326,19 +328,20 @@ const char* header_template =
     "#include <stdio.h>\n"
     "#include <string.h>\n"
     "#include \"../nexus_build/color_codes.h\"\n"
+    "#define PROJ_PATH_ATTR \"PATH=%225s\"\n"
+    "#define PROJ_NAME_ATTR \"ProjectName=%255s\"\n"
     "\n"
-    " const char* build_template_library;\n"
-    " const char* build_template_executable;\n"
-    " const char* main_template;\n"
-    " const char* lib_template;\n"
-    " const char* color_codes_template;\n"
-    " const char* gitignore_template;\n"
-    " const char* all_templates;\n"
-    " const char* header_template;\n"
+    "extern const char* build_template_library;\n"
+    "extern const char* build_template_executable;\n"
+    "extern const char* main_template;\n"
+    "extern const char* lib_template;\n"
+    "extern const char* color_codes_template;\n"
+    "extern const char* gitignore_template;\n"
+    "extern const char* all_templates;\n"
+    "extern const char* header_template;\n"
     "\n"
-    "int get_proj_attr(FILE* nex_file, char* buffer, size_t size, PROJ_NAME_ATTR);\n"
+    "int get_proj_attr(FILE* nex_file, char* buffer, size_t size, const char* proj_attr);\n"
     "\n"
     "#endif\n";
-
 
 

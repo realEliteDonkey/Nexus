@@ -132,7 +132,6 @@ NEX_ERROR add_src_files() {
     // used for src_file.h creation
     const char* base_dir = "src";
 
-    struct dirent* entry;
     DIR *dir = opendir(base_dir);
 
     if (dir == NULL) {
@@ -154,6 +153,10 @@ NEX_ERROR add_src_files() {
     fprintf(src_files, "const char* files[] = {\n");
 
     NEX_ERROR result = write_src_files_recursive(src_files, base_dir, "");
+    if (result != SUCCESS) {
+        perror("Failed to recursively search src/ files");
+        return result;
+    }
 
     closedir(dir);
     
@@ -204,19 +207,19 @@ NEX_ERROR nexus_git_init() {
 
     // Initialize a new git repository
     int res = system("git init");
-    if (res != SUCCESS) {
+    if (res != 0) {
         perror("Failed to initialize git repository");
         return ERR_FAILED_TO_OPEN;
     }
 
     res = system("git add .");
-    if (res != SUCCESS) {
+    if (res != 0) {
         perror("Failed to add files to git repository");
         return ERR_FAILED_TO_OPEN;
     }
 
     res = system("git commit -m 'Initial NEXUS PROJECT commit!'");
-    if (res != SUCCESS) {
+    if (res != 0) {
         perror("Failed to commit files to git repository");
         return ERR_FAILED_TO_OPEN;
     }

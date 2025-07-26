@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../nexus_build/color_codes.h"
+#include <sys/wait.h>
 
 #define PROJ_PATH_ATTR "PATH=%225s"
 #define PROJ_NAME_ATTR "ProjectName=%255s"

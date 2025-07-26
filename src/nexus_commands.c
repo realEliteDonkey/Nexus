@@ -80,7 +80,8 @@ NEX_ERROR nexus_init(int argc, char* argv[]) {
     // TODO: put resulting code in a build_exe_proj()
     // TODO: create a library style buiild_lib_proj() if argv[2] == "--lib"
     // If a --lib tag is specified, exclude main.c and add a lib.c w/ no main()
-    if (argc == 2) {
+    // TODO: argc conditions make it so a new project wont have a bin/
+    if (argc == 2 || (argc == 3 && strcmp(argv[1], "new") == 0)) {
         result = nexus_mkdir("bin");
         if (result != 0) {
             return ERR_MKDIR_FAILED;
@@ -119,10 +120,10 @@ NEX_ERROR nexus_init(int argc, char* argv[]) {
 
     result = build_file(".gitignore", gitignore_template);
     if (result != 0) exit(result);
-
-    printf(GREEN "[nexus]%s Project default_project initialized successfully.\n", RESET);
     
     result = nexus_git_init();
+
+    printf(GREEN "[nexus]%s Project default_project initialized successfully.\n", RESET);
 
     return SUCCESS;
 }
@@ -261,9 +262,9 @@ NEX_ERROR nexus_build() {
 
     printf(GREEN "[nexus]%s Created build.c file.\n", RESET);
 
-    printf(GREEN "[nexus]%s Executing: gcc -o nexus_build/build nexus_build/build.c nexus_build/user_templates.c\n", RESET);
+    printf(GREEN "[nexus]%s Executing: gcc -std=c2x -Wall -Wextra -o nexus_build/build nexus_build/build.c nexus_build/user_templates.c\n", RESET);
 
-    int res = system("gcc -o nexus_build/build nexus_build/build.c nexus_build/user_templates.c");
+    int res = system("gcc -std=c2x -Wall -Wextra -o nexus_build/build nexus_build/build.c nexus_build/user_templates.c");
     if (res != 0) {
         perror("System compilation call unsuccessful");
         return 1;
@@ -273,7 +274,14 @@ NEX_ERROR nexus_build() {
 
     printf(GREEN "[nexus]%s Running nexus_build/build\n", RESET);
     
-    system("nexus_build/build");
+    res = system("nexus_build/build");
+    if (res != 0) {
+        perror("Failed to execute nexus_build/build.exe");
+        return ERR_FAILED_SYS_CALL;
+    }
+
+    return SUCCESS;
+
 }
 
 
@@ -335,15 +343,15 @@ NEX_ERROR nexus_path_export() {
 
     printf(GREEN "[nexus]%s Executing: %s\n", RESET, cmd);
 
-    if (system(cmd) != SUCCESS) {
+    if (system(cmd) != 0) {
         strcat(cmd, "_");
-        if (system(cmd) != SUCCESS) return ERR_FAILED_PATH_EXPORT;
+        if (system(cmd) != 0) return ERR_FAILED_PATH_EXPORT;
         // TODO: Change to dynstr
         char rm_cmd[256] = "rm ";
         strcat(rm_cmd, path);
         strcat(rm_cmd, exe_name);
         result = system(rm_cmd);
-        if (result != 0) return ERR_FAILED_PATH_EXE_EXCH;
+        if (result !=0) return ERR_FAILED_PATH_EXE_EXCH;
         cmd[strlen(cmd) - 1] = '\0';
     }   
 

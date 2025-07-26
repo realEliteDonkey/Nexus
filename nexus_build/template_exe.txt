@@ -11,7 +11,7 @@
 */
 
 int main() {
-   char comp[] = "gcc -o ";
+   char comp[] = "gcc -std=c2x -Wall -Wextra -o ";
 
    /*
        Provide directory and output exe name here.

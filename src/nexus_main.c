@@ -3,8 +3,9 @@
 #include <string.h>
 #include <dirent.h>
 #include "../include/nexus_commands.h"
+#include "../include/help_msg.h"
 
-NEX_ERROR main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
 
     NEX_ERROR result = SUCCESS;
 
@@ -29,19 +30,18 @@ NEX_ERROR main(int argc, char* argv[]) {
             perror("Failed to create new Nexus project.\n");
             return result;
         }
+
         return SUCCESS;
     }
 
     // Builds a project with an executable
     // TODO: Prevent re-init 
     if (strcmp(argv[1], "init") == 0) {
-        result = nexus_init(argc, argv);
-        return result;
+        return nexus_init(argc, argv);
     }
 
     else if (strcmp(argv[1], "build") == 0 && argc == 2) {
-        result = nexus_build();
-        return result;
+        return nexus_build();
     }
 
     else if (strcmp(argv[1], "run") == 0 && argc == 2) {
@@ -56,6 +56,21 @@ NEX_ERROR main(int argc, char* argv[]) {
 
     else if (strcmp(argv[1], "export") == 0 && argc == 2) {
         return nexus_path_export();
+    }
+
+    else if (strcmp(argv[1], "help") == 0) {
+        if (argc == 2)
+            printf("%s", help_msg);
+        else if (argc > 2 && strcmp(argv[2], "init") == 0)
+            printf("%s", help_msg);
+        else if (argc > 2 && strcmp(argv[2], "new") == 0)
+            printf("%s", help_msg);
+        else if (argc > 2 && strcmp(argv[2], "build") == 0)
+            printf("%s", help_msg);
+        else if (argc > 2 && strcmp(argv[2], "run") == 0)
+            printf("%s", help_msg);
+        else
+            printf(RED "[nexus]%s No such help command exists.\n", RESET);
     }
 
     else {
