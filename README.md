@@ -1,6 +1,7 @@
 # Nexus Project Scaffold
 
-Nexus is a C project scaffolding and build automation tool. It helps you quickly initialize, build, and manage C projects with a simple command-line interface.
+Nexus is a C build system automation tool. It helps you quickly initialize, build, and manage C projects with a simple command-line interface.
+Currently only tested for UNIX systems.
 
 ---
 
@@ -12,6 +13,7 @@ Nexus is a C project scaffolding and build automation tool. It helps you quickly
 - **Source File Management**: Maintains a list of all source files for easy builds.
 - **Git Integration**: Optionally initializes a Git repository and creates a `.gitignore`.
 - **Colorful Output**: Uses color-coded terminal output for better readability.
+- Auto PATH export.
 
 ---
 
