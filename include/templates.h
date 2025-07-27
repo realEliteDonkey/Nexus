@@ -1,5 +1,5 @@
-#ifndef TEMPLATES_H
-#define TEMPLATES_H
+#ifndef NEXUS_TEMPLATES_H
+#define NEXUS_TEMPLATES_H
 
 #include <stdio.h>
 #include <string.h>

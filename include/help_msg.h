@@ -1,7 +1,7 @@
-#ifndef HELP_MSG_H
-#define HELP_MSG_H
+#ifndef NEX_HELP_MSG_H
+#define NEX_HELP_MSG_H
 
-const char* help_msg = 
+static const char* help_msg = 
 "   --   Type \"help [name]\" for explanation of the named command   --   \n"
 "\n"
 "   Commands\n"
@@ -13,7 +13,7 @@ const char* help_msg =
 "   path_export\n"
 "\n";
 
-const char* help_init =
+static const char* help_init =
 "   NEX_ERROR nexus_init(int argc, char* argv[])\n"
 "\n"
 "   ie. command: nexus init\n"
@@ -23,7 +23,7 @@ const char* help_init =
 "   Users may manually edit .nexus file to change this project name.\n"
 "\n";
 
-const char* help_new = 
+static const char* help_new = 
 "   NEX_ERROR nexus_new(const char* project_name, int argc, char* argv[])\n"
 "\n"
 "   ie. command: nexus new hello_world\n"
@@ -36,7 +36,7 @@ const char* help_new =
 "   Users may manually edit .nexus file to change this project name.\n"
 "\n";
 
-const char* help_build = 
+static const char* help_build = 
 "   NEX_ERROR nexus_build()\n"
 "\n"
 "   ie. command: nexus build\n"
@@ -45,7 +45,7 @@ const char* help_build =
 "   or not.\n"
 "\n";
 
-const char* help_run =
+static const char* help_run =
 "   NEX_ERROR nexus_run()\n"
 "\n"
 "   ie. command: nexus run\n"

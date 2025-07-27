@@ -1,9 +1,7 @@
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef NEXUS_UTILS_H
+#define NEXUS_UTILS_H
 
-//#include <stdio.h>
 #include <stdlib.h>
-//#include <string.h>
 #include <dirent.h>
 #include <unistd.h>
 #include "nex_error.h"

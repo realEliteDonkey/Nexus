@@ -60,15 +60,15 @@ int main(int argc, char* argv[]) {
 
     else if (strcmp(argv[1], "help") == 0) {
         if (argc == 2)
-            printf("%s", help_msg);
+            printf(ORANGE "%s%s", help_msg, RESET);
         else if (argc > 2 && strcmp(argv[2], "init") == 0)
-            printf("%s", help_msg);
+            printf(ORANGE"%s%s", help_init, RESET);
         else if (argc > 2 && strcmp(argv[2], "new") == 0)
-            printf("%s", help_msg);
+            printf(ORANGE "%s%s", help_new, RESET);
         else if (argc > 2 && strcmp(argv[2], "build") == 0)
-            printf("%s", help_msg);
+            printf(ORANGE "%s%s", help_build, RESET);
         else if (argc > 2 && strcmp(argv[2], "run") == 0)
-            printf("%s", help_msg);
+            printf(ORANGE "%s%s", help_run, RESET);
         else
             printf(RED "[nexus]%s No such help command exists.\n", RESET);
     }
