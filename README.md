@@ -1,4 +1,4 @@
-# Nexus Project Scaffold
+# Nexus Build System
 
 Nexus is a C build system automation tool. It helps you quickly initialize, build, and manage C projects with a simple command-line interface.
 Currently only tested for UNIX systems.
