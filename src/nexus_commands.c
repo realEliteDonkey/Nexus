@@ -245,6 +245,27 @@ NEX_ERROR nexus_build() {
 
     printf(GREEN "[nexus]%s Read .nexus file.\n", RESET);
 
+
+    // TODO: Replace "gcc" with "clang" in .txt files depending on "CC=" .nexus
+    if (strcmp(cc_name, "clang") == 0) {
+        NEX_ERROR result;
+        if (strcmp(type_str, "executable") == 0) {
+            result = replace_word("nexus_build/template_exe.txt", "gcc", "clang");
+            if (result != SUCCESS)
+                return ERR_BUILD_FAIL;
+        } else if (strcmp(type_str, "library") == 0) {
+            result = replace_word("nexus_build/template_exe.txt", "gcc", "clang");
+            if (result != SUCCESS)
+                return ERR_BUILD_FAIL;
+        }
+        else {
+            return ERR_UNKNOWN_TARGET;
+        }
+    }
+
+
+
+
     FILE* templates;
 
     if (strcmp(type_str, "executable") == 0)
