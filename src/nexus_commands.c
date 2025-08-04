@@ -75,24 +75,34 @@ NEX_ERROR nexus_init(int argc, char* argv[]) {
 
     result = build_file("nexus_build/color_codes.h", color_codes_template);
     if (result != SUCCESS) exit(1);
+
+    result = nexus_mkdir("bin");
+    if (result != 0) return ERR_MKDIR_FAILED;
     
 
     // TODO: put resulting code in a build_exe_proj()
     // TODO: create a library style buiild_lib_proj() if argv[2] == "--lib"
     // If a --lib tag is specified, exclude main.c and add a lib.c w/ no main()
     // TODO: argc conditions make it so a new project wont have a bin/
-    if (argc == 2 || (argc == 3 && strcmp(argv[1], "new") == 0)) {
-        result = nexus_mkdir("bin");
-        if (result != 0) {
-            return ERR_MKDIR_FAILED;
+    if ((argc == 2 || (argc == 3 && strcmp(argv[1], "new") == 0)) || 
+        (argc == 4) && (strcmp(argv[3], "--lib") == 0)) {
+
+        if (argc == 4) {
+            result = build_file("src/lib.c", lib_template);
+            if (result != SUCCESS) exit(result);
+            fprintf(nex_file, "TargetType=library\n");
         }
-
-        result = build_file("src/main.c", main_template);
-        if (result != 0) exit(result);
-
-        fprintf(nex_file, "TargetType=executable\n");
+        else {
+            result = build_file("src/main.c", main_template);
+            if (result != SUCCESS) exit(result);
+            fprintf(nex_file, "TargetType=executable\n");
+        }
     } 
-    else if (argc == 3 && strcmp(argv[2], "--lib") == 0) {
+    else if (
+        ((argc == 3) && (strcmp(argv[2], "--lib") == 0)) || 
+        (((argc == 4) && (strcmp(argv[3], "--lib") == 0)))
+    )
+    {
         result = nexus_mkdir("lib");
         if (result != 0) {
             return ERR_MKDIR_FAILED;
@@ -131,7 +141,7 @@ NEX_ERROR nexus_init(int argc, char* argv[]) {
 
 
 
-
+// TODO: Get rid of project_name param and just use the argv indexing
 NEX_ERROR nexus_new(const char* project_name, int argc, char* argv[]) {
     NEX_ERROR result = SUCCESS;
 

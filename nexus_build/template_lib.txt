@@ -22,7 +22,7 @@ int main() {
         base[len] = '\0';
 
         snprintf(obj_cmd, sizeof(obj_cmd),
-            "gcc -c -Iinclude %s -o build/%s.o",
+            "gcc -std=c2x -c -Iinclude %s -o build/%s.o",
             path, base);
 
         printf(GREEN "[nexus]%s Compiling: %s\n", RESET, obj_cmd);

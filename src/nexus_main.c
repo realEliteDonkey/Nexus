@@ -13,14 +13,14 @@ int main(int argc, char* argv[]) {
         Arguments will usually count to two.
         With tags (ie. --lib), a third argument will be passed
     */
-    if (argc < 2 || argc > 3) {
-        perror("nexus has max TWO argument other than 'nexus' itself!\n");
+    if (argc < 2 || argc > 4) {
+        perror("nexus has max FOUR argument other than 'nexus' itself!\n");
         return ERR_NEX_ARG_COUNT;
     }
 
     // TODO: Nexus new command
     if (strcmp(argv[1], "new") == 0) {
-        if (argc != 3) {
+        if (argc != 3 && argc != 4) {
             perror("nexus 'new' command requires a project name!\n");
             return ERR_NEX_ARG_COUNT;
         }
