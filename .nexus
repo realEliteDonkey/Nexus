@@ -1,3 +1,4 @@
 ProjectName=nexus
 TargetType=executable
 PATH=~/.local/bin/
+CC=clang

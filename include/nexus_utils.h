@@ -14,5 +14,6 @@ NEX_ERROR add_src_files();
 NEX_ERROR build_file(const char* file_name, const char* template);
 NEX_ERROR git_installed();
 NEX_ERROR nexus_git_init();
+NEX_ERROR replace_word(const char *filename, const char *old_word, const char *new_word);
 
 #endif

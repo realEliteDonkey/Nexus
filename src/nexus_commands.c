@@ -97,6 +97,8 @@ NEX_ERROR nexus_init(int argc, char* argv[]) {
             if (result != SUCCESS) exit(result);
             fprintf(nex_file, "TargetType=executable\n");
         }
+
+        fprintf(nex_file, "CC=gcc\n");
     } 
     else if (
         ((argc == 3) && (strcmp(argv[2], "--lib") == 0)) || 
@@ -229,6 +231,17 @@ NEX_ERROR nexus_build() {
         fscanf(nex_file, "TargetType=%32s", type_str);
         fclose(nex_file);
     }
+
+
+    // TODO: Change to dynstr
+    char cc_name[8] = "gcc";
+
+    nex_file = fopen(".nexus",  "r");
+    if (nex_file) {
+        fscanf(nex_file, "CC=%8s", cc_name);
+        fclose(nex_file);
+    }
+
 
     printf(GREEN "[nexus]%s Read .nexus file.\n", RESET);
 

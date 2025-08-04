@@ -18,6 +18,65 @@
 
 
 
+/**
+ * @brief Replaces all occurrences of a word in a file with a new word.
+ *
+ * This function reads the contents of the specified file, replaces every occurrence
+ * of `old_word` with `new_word`, and writes the updated content to a temporary file.
+ * After processing, the original file is replaced with the updated file.
+ *
+ * @param filename The path to the file to be modified.
+ * @param old_word The word to be replaced.
+ * @param new_word The word to replace with.
+ * @return NEX_ERROR Returns SUCCESS on success, or ERR_FAILED_TO_OPEN if the file cannot be opened or created.
+ *
+ * @note The function uses a fixed buffer size (BUFFER_SIZE) for reading lines.
+ *       If a line exceeds this size, it may not be processed correctly.
+ *       The temporary file is named "temp.txt" and will overwrite any existing file with that name.
+ */
+NEX_ERROR replace_word(const char *filename, const char *old_word, const char *new_word) {
+    FILE *fp = fopen(filename, "r");
+    if (!fp) {
+        perror("Error opening file");
+        return ERR_FAILED_TO_OPEN;
+    }
+
+    FILE *temp = fopen("temp.txt", "w");
+    if (!temp) {
+        perror("Error creating temp file");
+        fclose(fp);
+        return ERR_FAILED_TO_OPEN;
+    }
+
+    char buffer[BUFFER_SIZE];
+
+    while (fgets(buffer, BUFFER_SIZE, fp)) {
+        char *start = buffer;
+        char *pos;
+        char tempBuf[BUFFER_SIZE * 2] = ""; // To accommodate possible expansion
+        tempBuf[0] = '\0';
+
+        while ((pos = strstr(start, old_word)) != NULL) {
+            strncat(tempBuf, start, pos - start); // Copy up to match
+            strcat(tempBuf, new_word);            // Add replacement
+            start = pos + strlen(old_word);       // Move past the match
+        }
+
+        strcat(tempBuf, start); // Add remaining part of the line
+        fputs(tempBuf, temp);
+    }
+
+    fclose(fp);
+    fclose(temp);
+
+    remove(filename);
+    rename("temp.txt", filename);
+
+    return SUCCESS;
+}
+
+
+
 
 
 /**
@@ -49,6 +108,11 @@ NEX_ERROR build_file(const char* file_name, const char* template) {
 
     return SUCCESS;
 }
+
+
+
+
+
 
 /**
  * @brief Recursively writes all source files in the src directory
@@ -91,7 +155,7 @@ NEX_ERROR write_src_files_recursive(FILE *src_files, const char *base_path, cons
             return ERR_PATH_TOO_LONG;  // define an appropriate error code
         }
 
-
+        
         struct stat st;
         if (stat(entry_full, &st) == -1) {
             perror("Failed to stat entry");
