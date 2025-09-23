@@ -3,7 +3,6 @@
 
 
 
-
 #define BUFFER_SIZE 2048
 
 
@@ -50,7 +49,7 @@ NEX_ERROR nexus_init(int argc, char* argv[]) {
     printf(GREEN "[nexus]%s \".nexus_build/user_templates.c\" created.\n", RESET);
 
     // create the templates.c file in the build directory
-    result = build_file("include/templates.h", header_template);
+    result = build_file(".nexus_build/templates.h", header_template);
     if (result != SUCCESS) {
         printf(RED "[nexus]%s \"include/templates.h\" failed to create.\n", RESET);
         exit(ERR_FAILED_TO_OPEN);

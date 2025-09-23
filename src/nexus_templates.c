@@ -327,7 +327,7 @@ const char* header_template =
     "\n"
     "#include <stdio.h>\n"
     "#include <string.h>\n"
-    "#include \".nexus_build/color_codes.h\"\n"
+    "#include \"color_codes.h\"\n"
     "#define PROJ_PATH_ATTR \"PATH=%225s\"\n"
     "#define PROJ_NAME_ATTR \"ProjectName=%255s\"\n"
     "\n"
