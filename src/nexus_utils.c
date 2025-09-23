@@ -79,6 +79,9 @@ NEX_ERROR replace_word(const char *filename, const char *old_word, const char *n
 
 
 
+
+
+
 /**
  * @brief builds a file with text inside (template).
  * 
@@ -150,7 +153,7 @@ NEX_ERROR write_src_files_recursive(FILE *src_files, const char *base_path, cons
         // TODO: Change to dynstr
         char entry_full[BUFFER_SIZE];
         int written = snprintf(entry_full, sizeof(entry_full), "%s/%s", base_path, entry_relative);
-        if (written < 0 || written >= sizeof(entry_full)) {
+        if (written < 0 || written >= (int)sizeof(entry_full)) {
             fprintf(stderr, "Path too long: %s/%s\n", base_path, entry_relative);
             return ERR_PATH_TOO_LONG;  // define an appropriate error code
         }
@@ -198,15 +201,15 @@ NEX_ERROR add_src_files() {
 
     DIR *dir = opendir(base_dir);
 
-    if (dir == NULL) {
+    if (dir == nullptr) {
         perror("Could not open directory.");
         return ERR_DIR_NOT_FOUND;
     }
 
     // Add src_file.h functionality code generation at runtime
     // must be done before build.c is built
-    FILE* src_files = fopen("src_files.h", "w");
-    if ((src_files) == NULL) {
+    FILE* src_files = fopen(".nexus_build/src_files.h", "w");
+    if ((src_files) == nullptr) {
         perror("Failed to open file");
         return ERR_FAILED_TO_OPEN;
     }

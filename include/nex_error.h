@@ -20,7 +20,7 @@ typedef enum {
     ERR_PATH_TOO_LONG,
     ERR_FAILED_SYS_CALL,
     ERR_FAILED_TO_CD,
-    ERR_UNKNOWN_TARGET
+    ERR_UNKNOWN_TARGET,
 } NEX_ERROR;
 
 #endif

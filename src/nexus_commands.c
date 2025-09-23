@@ -36,18 +36,18 @@ NEX_ERROR nexus_init(int argc, char* argv[]) {
     }
 
     // Create the self-build directory
-    result = nexus_mkdir("nexus_build");
+    result = nexus_mkdir(".nexus_build");
     if (result != SUCCESS) {
         return ERR_MKDIR_FAILED;
     }
     
     // create the templates.c file in the build directory
-    result = build_file("nexus_build/user_templates.c", all_templates);
+    result = build_file(".nexus_build/user_templates.c", all_templates);
     if (result != SUCCESS) {
-        printf(RED "[nexus]%s \"nexus_build/user_templates.c\" failed to create.\n", RESET);
+        printf(RED "[nexus]%s \".nexus_build/user_templates.c\" failed to create.\n", RESET);
         exit(ERR_FAILED_TO_OPEN);
     }
-    printf(GREEN "[nexus]%s \"nexus_build/user_templates.c\" created.\n", RESET);
+    printf(GREEN "[nexus]%s \".nexus_build/user_templates.c\" created.\n", RESET);
 
     // create the templates.c file in the build directory
     result = build_file("include/templates.h", header_template);
@@ -58,22 +58,22 @@ NEX_ERROR nexus_init(int argc, char* argv[]) {
     printf(GREEN "[nexus]%s \"include/templates.h\" created.\n", RESET);
 
     // create txt files in build directory
-    result = build_file("nexus_build/template_exe.txt", build_template_executable);
+    result = build_file(".nexus_build/template_exe.txt", build_template_executable);
     if (result != SUCCESS) {
-        printf(RED "[nexus]%s \"nexus_build/template_exe.txt\" failed to create.\n", RESET);
+        printf(RED "[nexus]%s \".nexus_build/template_exe.txt\" failed to create.\n", RESET);
         exit(ERR_FAILED_TO_OPEN);
     }
-    printf(GREEN "[nexus]%s \"nexus_build/template_exe.txt\" created.\n", RESET);
+    printf(GREEN "[nexus]%s \".nexus_build/template_exe.txt\" created.\n", RESET);
 
     // create txt files in build directory
-    result = build_file("nexus_build/template_lib.txt", build_template_library);
+    result = build_file(".nexus_build/template_lib.txt", build_template_library);
     if (result != SUCCESS) {
-        printf(RED "[nexus]%s \"nexus_build/template_lib.txt\" failed to create.\n", RESET);
+        printf(RED "[nexus]%s \".nexus_build/template_lib.txt\" failed to create.\n", RESET);
         exit(ERR_FAILED_TO_OPEN);
     }
-    printf(GREEN "[nexus]%s \"nexus_build/template_lib.txt\" created.\n", RESET);
+    printf(GREEN "[nexus]%s \".nexus_build/template_lib.txt\" created.\n", RESET);
 
-    result = build_file("nexus_build/color_codes.h", color_codes_template);
+    result = build_file(".nexus_build/color_codes.h", color_codes_template);
     if (result != SUCCESS) exit(1);
 
     result = nexus_mkdir("bin");
@@ -84,8 +84,8 @@ NEX_ERROR nexus_init(int argc, char* argv[]) {
     // TODO: create a library style buiild_lib_proj() if argv[2] == "--lib"
     // If a --lib tag is specified, exclude main.c and add a lib.c w/ no main()
     // TODO: argc conditions make it so a new project wont have a bin/
-    if ((argc == 2 || (argc == 3 && strcmp(argv[1], "new") == 0)) || 
-        (argc == 4) && (strcmp(argv[3], "--lib") == 0)) {
+    if (((argc == 2) || (argc == 3 && strcmp(argv[1], "new") == 0)) || 
+        ((argc == 4) && (strcmp(argv[3], "--lib") == 0))) {
 
         if (argc == 4) {
             result = build_file("src/lib.c", lib_template);
@@ -250,11 +250,11 @@ NEX_ERROR nexus_build() {
     if (strcmp(cc_name, "clang") == 0) {
         NEX_ERROR result;
         if (strcmp(type_str, "executable") == 0) {
-            result = replace_word("nexus_build/template_exe.txt", "gcc", "clang");
+            result = replace_word(".nexus_build/template_exe.txt", "gcc", "clang");
             if (result != SUCCESS)
                 return ERR_BUILD_FAIL;
         } else if (strcmp(type_str, "library") == 0) {
-            result = replace_word("nexus_build/template_exe.txt", "gcc", "clang");
+            result = replace_word(".nexus_build/template_exe.txt", "gcc", "clang");
             if (result != SUCCESS)
                 return ERR_BUILD_FAIL;
         }
@@ -266,19 +266,24 @@ NEX_ERROR nexus_build() {
 
 
 
+
+    
+
+
     FILE* templates;
 
-    if (strcmp(type_str, "executable") == 0)
-        templates = fopen("nexus_build/template_exe.txt", "r");
+    if (strcmp(type_str, "executable") == 0) {
+        templates = fopen(".nexus_build/template_exe.txt", "r");
+    }
     else if (strcmp(type_str, "library") == 0)
-        templates = fopen("nexus_build/template_lib.txt", "r");
+        templates = fopen(".nexus_build/template_lib.txt", "r");
     else 
         return ERR_FAILED_TO_READ;
 
     // TODO: Change to dynstr
     char template_contents[BUFFER_SIZE] = {0};
 
-    if (templates != NULL) {
+    if (templates != nullptr) {
         size_t offset = 0;
         while (fgets(template_contents + offset, sizeof(template_contents) - offset, templates) != NULL) {
             offset = strlen(template_contents);
@@ -301,14 +306,14 @@ NEX_ERROR nexus_build() {
     printf(GREEN "[nexus]%s Building build.c file.\n", RESET);
 
     // create the build.c file in current project directory
-    result = build_file("nexus_build/build.c", template_contents);
+    result = build_file(".nexus_build/build.c", template_contents);
     if (result != SUCCESS) exit(ERR_FAILED_TO_OPEN);
 
     printf(GREEN "[nexus]%s Created build.c file.\n", RESET);
 
-    printf(GREEN "[nexus]%s Executing: gcc -std=c2x -Wall -Wextra -o nexus_build/build nexus_build/build.c nexus_build/user_templates.c\n", RESET);
+    printf(GREEN "[nexus]%s Executing: gcc -std=c2x -Wall -Wextra -o .nexus_build/build .nexus_build/build.c .nexus_build/user_templates.c\n", RESET);
 
-    int res = system("gcc -std=c2x -Wall -Wextra -o nexus_build/build nexus_build/build.c nexus_build/user_templates.c");
+    int res = system("gcc -std=c2x -Wall -Wextra -o .nexus_build/build .nexus_build/build.c .nexus_build/user_templates.c");
     if (res != 0) {
         perror("System compilation call unsuccessful");
         return 1;
@@ -316,11 +321,11 @@ NEX_ERROR nexus_build() {
 
     printf(GREEN "[nexus]%s Execution successful\n", RESET);
 
-    printf(GREEN "[nexus]%s Running nexus_build/build\n", RESET);
+    printf(GREEN "[nexus]%s Running .nexus_build/build\n", RESET);
     
-    res = system("nexus_build/build");
+    res = system(".nexus_build/build");
     if (res != 0) {
-        perror("Failed to execute nexus_build/build.exe");
+        perror("Failed to execute .nexus_build/build.exe");
         return ERR_FAILED_SYS_CALL;
     }
 

@@ -5,5 +5,9 @@ bin/
 *.exe
 # Ignore IDE specific files
 .vscode/
-#Ignore build.exe
-nexus_build/build
+#Ignore nexus build files
+.nexus_build/
+# ignore build files
+build/
+
+
