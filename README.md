@@ -1,6 +1,6 @@
 # Nexus Project Scaffold
 
-Nexus is a C project scaffolding and build automation tool. It helps you quickly initialize, build, and manage C projects with a simple command-line interface.
+Nexus is a C project scaffolding and build automation tool written in [Zig](https://ziglang.org/). It helps you quickly initialize, build, and manage C projects with a simple command-line interface.
 
 ---
 
@@ -17,29 +17,36 @@ Nexus is a C project scaffolding and build automation tool. It helps you quickly
 
 ## Getting Started
 
-### 1. Download and Set Up the Nexus Executable
+### Prerequisites
 
-1. **Download** the precompiled `nexus` executable for your platform.
-2. **Export it to your `PATH`** so you can run `nexus` from anywhere:
+- [Zig](https://ziglang.org/download/) 0.13.0 or later
 
-   **On Linux/macOS:**
-   ```sh
-   chmod +x nexus
-   sudo mv nexus /usr/local/bin/
-   ```
+### 1. Build from Source
 
-   **On Windows:**
-   - Move `nexus.exe` to a folder included in your system `PATH` (e.g., `C:\Windows\System32` or another directory in your `PATH`).
-   - Or, add the folder containing `nexus.exe` to your `PATH` environment variable.
+```sh
+zig build -Doptimize=ReleaseSafe
+```
 
-3. **Verify installation:**
-   ```sh
-   nexus --help
-   ```
+The compiled binary will be placed in `zig-out/bin/nexus`.
+
+### 2. Install the Nexus Binary
+
+**On Linux/macOS:**
+```sh
+sudo cp zig-out/bin/nexus /usr/local/bin/
+```
+
+**On Windows:**
+- Copy `zig-out/bin/nexus.exe` to a folder included in your system `PATH`.
+
+**Verify installation:**
+```sh
+nexus help
+```
 
 ---
 
-### 2. Initialize a New Project
+### 3. Initialize a New Project
 
 To create a new project in a subdirectory:
 ```sh
@@ -58,7 +65,7 @@ nexus init --lib
 
 ---
 
-### 3. Build the Project
+### 4. Build the Project
 
 ```sh
 nexus build
@@ -66,7 +73,7 @@ nexus build
 
 ---
 
-### 4. Run the Project
+### 5. Run the Project
 
 ```sh
 nexus run
@@ -75,7 +82,7 @@ nexus run
 
 ---
 
-### 5. Export Binary
+### 6. Export Binary
 
 Copy the built binary to a specified path:
 ```sh
@@ -86,14 +93,26 @@ nexus export
 
 ## Project Structure
 
-A typical Nexus project looks like this:
+The Nexus source itself follows this layout:
+
+```
+.
+├── build.zig           # Zig build script
+├── src/
+│   ├── main.zig        # Entry point & CLI argument parsing
+│   ├── commands.zig    # init, new, build, run, export commands
+│   ├── utils.zig       # File I/O, directory, git utilities
+│   └── templates.zig   # Embedded template strings
+```
+
+A typical Nexus-managed C project looks like this:
 
 ```
 .
 ├── bin/                # Compiled binaries
 ├── build/              # Object files and build artifacts
 ├── include/            # Header files
-├── nexus_build/        # Build scripts and templates
+├── nexus_build/        # Build scripts and templates (auto-generated)
 ├── src/                # Source files
 ├── .nexus              # Project metadata
 ├── .gitignore
@@ -106,10 +125,4 @@ A typical Nexus project looks like this:
 
 - Edit templates in `nexus_build/` to change the default generated code.
 - Add your own source files to `src/` and headers to `include/`.
-
----
-
-## Error Codes
-
-See [`include/nex_error.h`](include/nex_error.h) for a list of error codes used throughout the project.
 
