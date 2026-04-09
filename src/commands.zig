@@ -187,10 +187,11 @@ pub fn nexusPathExport(allocator: Allocator) !void {
         defer allocator.free(cmd2);
         try utils.runShell(allocator, cmd2);
 
+        // Remove the original (now-stale) binary from the export path.
         const rm_cmd = try std.fmt.allocPrint(
             allocator,
             "rm {s}{s}",
-            .{ export_path, exe_path },
+            .{ export_path, proj_name },
         );
         defer allocator.free(rm_cmd);
         try utils.runShell(allocator, rm_cmd);
